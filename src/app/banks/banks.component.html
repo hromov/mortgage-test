@@ -1,2 +1,5 @@
 <h1>Banks managment</h1>
+<button color="primary" mat-mini-fab routerLink="/">
+    <mat-icon>arrow_back_ios_new</mat-icon>
+</button>
 <app-banks-editor [dataSource]="$any(banks$ | async)"></app-banks-editor>

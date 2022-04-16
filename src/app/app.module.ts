@@ -17,8 +17,9 @@ import { MatInputModule } from '@angular/material/input';
 import {MatIconModule} from '@angular/material/icon';
 import { BanksEditorComponent } from './banks/banks-editor/banks-editor.component';
 import { HttpClientModule } from '@angular/common/http';
-
-
+import { MortgageCalcComponent } from './mortgage-calc/mortgage-calc.component';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatCardModule} from '@angular/material/card';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { HttpClientModule } from '@angular/common/http';
     HomeComponent,
     BanksComponent,
     BankEditComponent,
-    BanksEditorComponent
+    BanksEditorComponent,
+    MortgageCalcComponent
   ],
   imports: [
     BrowserModule,
@@ -41,6 +43,8 @@ import { HttpClientModule } from '@angular/common/http';
     MatInputModule,
     MatIconModule,
     HttpClientModule,
+    MatToolbarModule,
+    MatCardModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
