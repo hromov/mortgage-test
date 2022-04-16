@@ -3,14 +3,44 @@
         <mat-card-title>Mortgage Calculaltor</mat-card-title>
         <mat-card-subtitle>By Serhii Hromov</mat-card-subtitle>
     </mat-card-header>
-    <mat-card-content>
-        <p>
-            The Shiba Inu is the smallest of the six original and distinct spitz breeds of dog from Japan.
-            A small, agile dog that copes very well with mountainous terrain, the Shiba Inu was originally
-            bred for hunting.
-        </p>
+    <mat-card-content [formGroup]="form">
+
+        <mat-form-field appearance="fill">
+            <mat-label>Initial loan</mat-label>
+            <mat-icon matPrefix>attach_money</mat-icon>
+            <input matInput type="number" placeholder="Initial loan" formControlName="loan" step="10000">
+            <mat-error *ngIf="loanField.hasError('max')">
+                Maximum loan is <strong>{{selectedBank.max_loan | currency:'USD'}}</strong>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Down payment</mat-label>
+            <mat-icon matPrefix>attach_money</mat-icon>
+            <input matInput type="number" placeholder="Down payment" formControlName="down" step="1000">
+            <mat-error *ngIf="downField.hasError('min')">
+                Minimal down payment is <strong>{{minDown | currency:'USD'}} ({{selectedBank.min_down | percent}})</strong>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-select placeholder="Select bank" formControlName="bank">
+
+                <mat-option *ngFor="let bank of banks$ | async" [value]="bank.id">
+                    {{bank.name}}
+                </mat-option>
+
+            </mat-select>
+        </mat-form-field>
+        
+        <div class="info" *ngIf="form.valid && monthlyMortgage > 0">
+            <h2>Monthly mortgage: {{monthlyMortgage | currency: 'USD'}}</h2>
+            <p>Interest rate: {{selectedBank.interest | percent}}, term: {{selectedBank.term}} m</p>
+        </div>
+
     </mat-card-content>
     <mat-card-actions>
+        <!-- <button mat-button (click)="change()">Change</button> -->
         <button mat-button routerLink="/banks">Settings</button>
     </mat-card-actions>
 </mat-card>

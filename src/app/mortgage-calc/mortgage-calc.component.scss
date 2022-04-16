@@ -1,7 +1,15 @@
 mat-card {
     max-width: 480px;
+    display: block;
+    margin: auto;
 }
 mat-card-actions {
     display: flex;
     justify-content: right;
+}
+mat-form-field {
+    width: 100%;
+}
+.info {
+    margin-bottom: 16px;
 }

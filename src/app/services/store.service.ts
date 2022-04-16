@@ -69,4 +69,11 @@ export class StoreService {
         shareReplay()
       );
   }
+
+  getBank(bankId: string): Bank {
+    const banks = this.subject.getValue();
+    const index = banks.findIndex(bank => bank.id == bankId)
+    console.log(bankId, banks)
+    return banks[index]
+  }
 }

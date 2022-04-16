@@ -20,6 +20,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { MortgageCalcComponent } from './mortgage-calc/mortgage-calc.component';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatCardModule} from '@angular/material/card';
+import {MatSelectModule} from '@angular/material/select';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import {MatCardModule} from '@angular/material/card';
     HttpClientModule,
     MatToolbarModule,
     MatCardModule,
+    MatSelectModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
