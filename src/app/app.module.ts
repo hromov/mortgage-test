@@ -15,6 +15,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSliderModule} from '@angular/material/slider';
 import { MatInputModule } from '@angular/material/input';
 import {MatIconModule} from '@angular/material/icon';
+import { BanksEditorComponent } from './banks/banks-editor/banks-editor.component';
 
 
 
@@ -23,7 +24,8 @@ import {MatIconModule} from '@angular/material/icon';
     AppComponent,
     HomeComponent,
     BanksComponent,
-    BankEditComponent
+    BankEditComponent,
+    BanksEditorComponent
   ],
   imports: [
     BrowserModule,
