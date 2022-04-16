@@ -29,4 +29,14 @@ export class BanksService {
   loadAllBanks(): Observable<Bank[]> {
     return of(BANK_DATA)
   }
+
+  save(bankId: string, changes: Partial<Bank>): Observable<any> {
+    // save implementation
+    return of(BANK_DATA[0])
+  }
+
+  delete(bankId: string): Observable<any> {
+    //delete implementaion
+    return of("ok")
+  }
 }

@@ -13,7 +13,7 @@
 
     <mat-form-field appearance="fill">
         <mat-icon matPrefix>attach_money</mat-icon>
-        <input matInput type="number" placeholder="Maximum loan" formControlName="max_loan">
+        <input matInput type="number" placeholder="Maximum loan" formControlName="max_loan" step="10000">
     </mat-form-field>
 
     <label>Minimum down payment: {{form.value.min_down | percent}}</label>
@@ -31,9 +31,11 @@
 </mat-dialog-content>
 
 <mat-dialog-actions>
-    <button class="mat-accent" mat-mini-fab aria-label="delete" (click)="delete()">
-        <mat-icon>delete</mat-icon>
-    </button>
+    <div>
+        <button class="mat-accent" mat-mini-fab aria-label="delete" (click)="delete()" *ngIf="bank.id">
+            <mat-icon>delete</mat-icon>
+        </button>
+    </div>
     <div>
         <button class="mat-raised-button" (click)="close()">
             Close

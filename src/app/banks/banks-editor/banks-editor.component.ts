@@ -45,12 +45,13 @@ export class BanksEditorComponent implements OnInit {
 
     dialogConfig.data = bank;
 
-    const dialogRef = this.dialog.open(BankEditComponent, dialogConfig);
+    this.dialog.open(BankEditComponent, dialogConfig);
+    // const dialogRef = this.dialog.open(BankEditComponent, dialogConfig);
 
-    dialogRef.afterClosed().pipe(
-      filter(val => val!!),
-      tap(() => console.log("bank changed. implement!"))
-    ).subscribe()
+    // dialogRef.afterClosed().pipe(
+    //   filter(val => val!!),
+    //   tap(() => console.log("bank changed. implement!"))
+    // ).subscribe()
 
   }
 

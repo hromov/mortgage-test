@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, map, Observable, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, shareReplay, tap, throwError } from 'rxjs';
 import { Bank, BanksService } from './banks.service';
 
 @Injectable({
@@ -20,5 +20,53 @@ export class StoreService {
       }),
       tap(banks => this.subject.next(banks))
     ).subscribe()
+  }
+
+  saveBank(bankId: string, changes: Partial<Bank>): Observable<any> {
+    const banks = this.subject.getValue();
+    const index = banks.findIndex(bank => bank.id == bankId)
+    // temporary fake id implementetion
+    const newBank: Bank = {
+      ...banks[index == -1 ? 0 : index],
+      ...changes
+    }
+    const newBanks: Bank[] = banks.slice(0);
+    // temporary fake id implementetion
+    if (index == -1) {
+      newBank.id = new Date().getTime().toString() + changes.name
+      newBanks.push(newBank)
+    } else {
+      newBanks[index] = newBank;
+    }
+    this.subject.next(newBanks);
+    return this.bs.save(bankId, changes)
+      .pipe(
+        catchError(err => {
+          const message = 'Could not save bank';
+          console.log(message, err);
+          // this.messagesService.showErrors(message);
+          return throwError(() => err);
+        }),
+        shareReplay()
+      );
+  }
+
+  deleteBank(bankId: string): Observable<any> {
+    let banks = this.subject.getValue();
+    const index = banks.findIndex(bank => bank.id == bankId)
+    banks.splice(index, 1);
+    // console.log(banks)
+    const newBanks: Bank[] = banks.slice(0)
+    this.subject.next(newBanks);
+    return this.bs.delete(bankId)
+      .pipe(
+        catchError(err => {
+          const message = 'Could not delete bank';
+          console.log(message, err);
+          // this.messagesService.showErrors(message);
+          return throwError(() => err);
+        }),
+        shareReplay()
+      );
   }
 }
