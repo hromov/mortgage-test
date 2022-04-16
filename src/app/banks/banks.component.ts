@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { filter, tap } from 'rxjs';
+import { BankEditComponent } from '../bank-edit/bank-edit.component';
 
 
 export interface Bank {
@@ -17,6 +20,14 @@ const BANK_DATA: Bank[] = [
   {name: "Bank of Italy", interest: 0.2, max_loan: 300000, min_down: 0.5, term: 32},
 ];
 
+const Default_Bank: Bank = {
+  name: "Bank name",
+  interest: 0.2,
+  max_loan: 10000,
+  min_down: 0.1,
+  term: 12,
+}
+
 
 @Component({
   selector: 'app-banks',
@@ -26,13 +37,32 @@ const BANK_DATA: Bank[] = [
 export class BanksComponent implements OnInit {
   displayedColumns: string[] = ['name', 'interest', 'max_loan', 'min_down', 'term'];
   dataSource = BANK_DATA;
-  constructor() { }
+  constructor(private dialog: MatDialog) { }
 
   ngOnInit(): void {
   }
 
   add() {
-    console.log("add new bank")
+    this.editBank(Default_Bank)
+  }
+
+  editBank(bank: Bank) {
+
+    const dialogConfig = new MatDialogConfig();
+
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.width = "400px";
+
+    dialogConfig.data = bank;
+
+    const dialogRef = this.dialog.open(BankEditComponent, dialogConfig);
+
+    dialogRef.afterClosed().pipe(
+      filter(val => val!!),
+      tap(() => console.log("bank changed. implement!"))
+    ).subscribe()
+
   }
 
 }

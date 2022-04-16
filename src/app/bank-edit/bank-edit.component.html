@@ -1,0 +1,44 @@
+<h2 mat-dialog-title>Edit bank</h2>
+
+<mat-dialog-content [formGroup]="form">
+
+    <mat-form-field appearance="fill">
+        <input matInput placeholder="Bank Name" formControlName="name">
+    </mat-form-field>
+
+    <label>Interest rate: {{form.value.interest | percent}}</label>
+    <mat-slider thumbLabel [displayWith]="formatLabel" tickInterval="0.01" min="0" max="1" step="0.01"
+        formControlName="interest">
+    </mat-slider>
+
+    <mat-form-field appearance="fill">
+        <mat-icon matPrefix>attach_money</mat-icon>
+        <input matInput type="number" placeholder="Maximum loan" formControlName="max_loan">
+    </mat-form-field>
+
+    <label>Minimum down payment: {{form.value.min_down | percent}}</label>
+    <mat-slider thumbLabel [displayWith]="formatLabel" tickInterval="0.01" min="0" max="1" step="0.01"
+        formControlName="min_down">
+    </mat-slider>
+
+    <label>Loan terms: {{form.value.term}} month</label>
+    <mat-slider thumbLabel tickInterval="1" min="0" max="120" step="1"
+        formControlName="term">
+    </mat-slider>
+
+
+
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+
+    <button class="mat-raised-button" (click)="close()">
+        Close
+    </button>
+
+    <button class="mat-raised-button mat-primary" #saveButton (click)="save()">
+        Save
+    </button>
+
+</mat-dialog-actions>
