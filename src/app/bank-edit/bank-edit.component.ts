@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Bank } from '../banks/banks.component';
+import { Bank } from '../services/banks.service';
 
 @Component({
   selector: 'app-bank-edit',

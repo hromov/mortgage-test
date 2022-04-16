@@ -16,6 +16,7 @@ import {MatSliderModule} from '@angular/material/slider';
 import { MatInputModule } from '@angular/material/input';
 import {MatIconModule} from '@angular/material/icon';
 import { BanksEditorComponent } from './banks/banks-editor/banks-editor.component';
+import { HttpClientModule } from '@angular/common/http';
 
 
 
@@ -39,6 +40,7 @@ import { BanksEditorComponent } from './banks/banks-editor/banks-editor.componen
     MatSliderModule,
     MatInputModule,
     MatIconModule,
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

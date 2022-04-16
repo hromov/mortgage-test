@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { filter, tap } from 'rxjs';
 import { BankEditComponent } from 'src/app/bank-edit/bank-edit.component';
-import { Bank } from '../banks.component';
+import { Bank } from 'src/app/services/banks.service';
 
 
 const Default_Bank: Bank = {
