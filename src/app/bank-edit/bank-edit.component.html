@@ -22,8 +22,7 @@
     </mat-slider>
 
     <label>Loan terms: {{form.value.term}} month</label>
-    <mat-slider thumbLabel tickInterval="1" min="0" max="120" step="1"
-        formControlName="term">
+    <mat-slider thumbLabel tickInterval="1" min="0" max="120" step="1" formControlName="term">
     </mat-slider>
 
 
@@ -32,13 +31,17 @@
 </mat-dialog-content>
 
 <mat-dialog-actions>
-
-    <button class="mat-raised-button" (click)="close()">
-        Close
+    <button class="mat-accent" mat-mini-fab aria-label="delete" (click)="delete()">
+        <mat-icon>delete</mat-icon>
     </button>
+    <div>
+        <button class="mat-raised-button" (click)="close()">
+            Close
+        </button>
 
-    <button class="mat-raised-button mat-primary" #saveButton (click)="save()">
-        Save
-    </button>
+        <button class="mat-raised-button mat-primary save" #saveButton (click)="save()">
+            Save
+        </button>
+    </div>
 
 </mat-dialog-actions>

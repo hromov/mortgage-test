@@ -54,4 +54,8 @@ export class BankEditComponent implements AfterViewInit {
     this.dialogRef.close();
   }
 
+  delete() {
+    this.dialogRef.close();
+  }
+
 }

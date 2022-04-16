@@ -5,6 +5,7 @@ import { BankEditComponent } from '../bank-edit/bank-edit.component';
 
 
 export interface Bank {
+  id: string;
   name: string;
   interest: number;
   max_loan: number;
@@ -13,14 +14,15 @@ export interface Bank {
 }
 
 const BANK_DATA: Bank[] = [
-  {name: "Bank of America", interest: 0.2, max_loan: 40000, min_down: 0.3, term: 12},
-  {name: "Bank of China", interest: 0.2, max_loan: 2000000, min_down: 0.25, term: 14},
-  {name: "Bank of Ukraine", interest: 0.2, max_loan: 20000, min_down: 0.2, term: 9},
-  {name: "Bank of Spain", interest: 0.2, max_loan: 100000, min_down: 0.4, term: 16},
-  {name: "Bank of Italy", interest: 0.2, max_loan: 300000, min_down: 0.5, term: 32},
+  {id: "0", name: "Bank of America", interest: 0.2, max_loan: 40000, min_down: 0.3, term: 12},
+  {id: "1", name: "Bank of China", interest: 0.2, max_loan: 2000000, min_down: 0.25, term: 14},
+  {id: "2", name: "Bank of Ukraine", interest: 0.2, max_loan: 20000, min_down: 0.2, term: 9},
+  {id: "3", name: "Bank of Spain", interest: 0.2, max_loan: 100000, min_down: 0.4, term: 16},
+  {id: "4", name: "Bank of Italy", interest: 0.2, max_loan: 300000, min_down: 0.5, term: 32},
 ];
 
 const Default_Bank: Bank = {
+  id: "",
   name: "Bank name",
   interest: 0.2,
   max_loan: 10000,
@@ -35,7 +37,7 @@ const Default_Bank: Bank = {
   styleUrls: ['./banks.component.scss']
 })
 export class BanksComponent implements OnInit {
-  displayedColumns: string[] = ['name', 'interest', 'max_loan', 'min_down', 'term'];
+  displayedColumns: string[] = ['name', 'term', 'interest', 'min_down', 'max_loan', 'edit'];
   dataSource = BANK_DATA;
   constructor(private dialog: MatDialog) { }
 
@@ -43,10 +45,10 @@ export class BanksComponent implements OnInit {
   }
 
   add() {
-    this.editBank(Default_Bank)
+    this.edit(Default_Bank)
   }
 
-  editBank(bank: Bank) {
+  edit(bank: Bank) {
 
     const dialogConfig = new MatDialogConfig();
 

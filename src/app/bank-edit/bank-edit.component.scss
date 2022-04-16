@@ -9,8 +9,8 @@ mat-slider {
 }
 mat-dialog-actions {
     display: flex;
-    justify-content: right;
+    justify-content: space-between;
 }
-button {
+.save {
     margin-left: 20px;
 }
