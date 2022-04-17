@@ -84,12 +84,27 @@ func bankChangeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func validityCheck(bank *Bank) bool {
+	if bank == nil || bank.Interest <= 0.0 || bank.MaxLoan < 0 || bank.MinDown < 0.0 || bank.Name == "" || bank.Term < 0 {
+		return false
+	}
+	return true
+}
+
 func newBankHandler(w http.ResponseWriter, r *http.Request) {
 	var b Bank
 
 	err := json.NewDecoder(r.Body).Decode(&b)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if b.ID != "" {
+		http.Error(w, "Can't POST bank with existing ID", http.StatusBadRequest)
+	}
+	// log.Println("interest = ", b.Interest)
+	if !validityCheck(&b) {
+		http.Error(w, fmt.Sprintf("Bad bank data: %v", b), http.StatusBadRequest)
 		return
 	}
 	b.ID = fmt.Sprintf("%d", time.Now().UnixNano())
