@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, map, Observable, shareReplay, tap, throwError } from 'rxjs';
+import { MessagesService } from '../messages/messages.service';
 import { Bank, BanksService } from './banks.service';
 
 @Injectable({
@@ -10,10 +11,13 @@ export class StoreService {
 
   banks$: Observable<Bank[]> = this.subject.asObservable();
 
-  constructor(private bs: BanksService) {
+  constructor(
+    private bs: BanksService,
+    private messagesService: MessagesService
+    ) {
     this.bs.loadAllBanks().pipe(
       catchError(err => {
-        const message = "Could not load banks";
+        const message = "Could not load banks. Reload the page please";
         // this.messagesService.showErrors(message);
         console.log(message, err)
         return throwError(() => err);
@@ -37,9 +41,9 @@ export class StoreService {
       return this.bs.new(newBank)
         .pipe(
           catchError(err => {
-            const message = 'Could not save bank';
+            const message = 'Could not save bank. Try again';
             console.log(message, err);
-            // this.messagesService.showErrors(message);
+            this.messagesService.showErrors(message);
             return throwError(() => err);
           }),
           shareReplay(),
@@ -55,9 +59,9 @@ export class StoreService {
     return this.bs.save(bankId, newBank)
       .pipe(
         catchError(err => {
-          const message = 'Could not save bank';
+          const message = 'Could not save bank. Try again';
           console.log(message, err);
-          // this.messagesService.showErrors(message);
+          this.messagesService.showErrors(message);
           return throwError(() => err);
         }),
         shareReplay()
@@ -76,9 +80,9 @@ export class StoreService {
     return this.bs.delete(bankId)
       .pipe(
         catchError(err => {
-          const message = 'Could not delete bank';
+          const message = 'Could not delete bank! So we put it back in the list. Try again';
           console.log(message, err);
-          // this.messagesService.showErrors(message);
+          this.messagesService.showErrors(message);
           //if we were not able to delete - we have to push it back
           this.subject.next(oldBanks)
           return throwError(() => err);

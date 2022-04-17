@@ -71,7 +71,7 @@ export class MortgageCalcComponent implements OnInit {
     })
 
     this.form.valueChanges.subscribe(values => {
-      console.log(values)
+      // console.log(values)
       this.monthlyMortgage = monthlyCalc(values.loan - values.down, this.selectedBank.interest, this.selectedBank.term)
     })
   }

@@ -21,6 +21,7 @@ import { MortgageCalcComponent } from './mortgage-calc/mortgage-calc.component';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatCardModule} from '@angular/material/card';
 import {MatSelectModule} from '@angular/material/select';
+import { MessagesComponent } from './messages/messages.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import {MatSelectModule} from '@angular/material/select';
     BanksComponent,
     BankEditComponent,
     BanksEditorComponent,
-    MortgageCalcComponent
+    MortgageCalcComponent,
+    MessagesComponent
   ],
   imports: [
     BrowserModule,
