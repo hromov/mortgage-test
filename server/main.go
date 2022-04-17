@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -51,6 +52,39 @@ func bankChangeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//search bank index in base
+	bankIndex := -1
+	for i, bank := range BANK_DATA {
+		if bank.ID == ID {
+			bankIndex = i
+		}
+	}
+
+	if bankIndex == -1 {
+		http.NotFound(w, r)
+		return
+	}
+
+	switch r.Method {
+	case "PUT":
+		var b Bank
+
+		err := json.NewDecoder(r.Body).Decode(&b)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		BANK_DATA[bankIndex] = b
+		w.WriteHeader(http.StatusOK)
+		return
+	case "DELETE":
+		BANK_DATA = append(BANK_DATA[:bankIndex], BANK_DATA[bankIndex+1:]...)
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+}
+
+func newBankHandler(w http.ResponseWriter, r *http.Request) {
 	var b Bank
 
 	err := json.NewDecoder(r.Body).Decode(&b)
@@ -58,23 +92,25 @@ func bankChangeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	b.ID = fmt.Sprintf("%d", time.Now().UnixNano())
+	BANK_DATA = append(BANK_DATA, b)
 
-	if r.Method == "PUT" {
-		for i, bank := range BANK_DATA {
-			if bank.ID == ID {
-				BANK_DATA[i] = b
-				w.WriteHeader(http.StatusOK)
-				return
-			}
-		}
+	bankString, err := json.Marshal(b)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError),
+			http.StatusInternalServerError)
+		return
 	}
-	http.NotFound(w, r)
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, string(bankString))
+	return
 }
 
 func newREST() *mux.Router {
 	r := mux.NewRouter()
-	r.HandleFunc("/banks", banksHandler).Methods("GET", "OPTIONS")
-	r.HandleFunc("/banks/{id}", bankChangeHandler).Methods("PUT", "DELETE", "OPTIONS")
+	r.HandleFunc("/banks", banksHandler).Methods("GET")
+	r.HandleFunc("/banks", newBankHandler).Methods("POST")
+	r.HandleFunc("/banks/{id}", bankChangeHandler).Methods("PUT", "DELETE")
 	return r
 }
 
@@ -82,7 +118,7 @@ func main() {
 
 	router := newREST()
 	credentials := handlers.AllowCredentials()
-	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "OPTIONS", "DELETE"})
+	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"})
 	headersOk := handlers.AllowedHeaders([]string{"Accept", "Accept-Language", "Content-Type", "Content-Language", "Origin", "X-Requested-With", "application/json"})
 
 	// ttl := handlers.MaxAge(3600)

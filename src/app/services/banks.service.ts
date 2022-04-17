@@ -33,12 +33,14 @@ export class BanksService {
   }
 
   save(bankId: string, bank: Bank): Observable<any> {
-    // save implementation
     return this.http.put(`${host}/banks/${bankId}`, bank)
   }
 
   delete(bankId: string): Observable<any> {
-    //delete implementaion
-    return of("ok")
+    return this.http.delete(`${host}/banks/${bankId}`)
+  }
+
+  new(bank: Bank): Observable<Bank> {
+    return this.http.post<Bank>(`${host}/banks`, bank)
   }
 }
