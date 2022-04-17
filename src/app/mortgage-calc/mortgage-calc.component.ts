@@ -29,8 +29,8 @@ export class MortgageCalcComponent implements OnInit {
     private storeService: StoreService,
   ) {
     this.form = fb.group({
-      loan: [0, Validators.required],
-      down: [0, Validators.required],
+      loan: [10000, Validators.required],
+      down: [3000, Validators.required],
       bank: ["", Validators.required],
     });
   }
