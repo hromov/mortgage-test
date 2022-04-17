@@ -1,6 +1,6 @@
 # MortgageTest
 
-This project was done by Hromov Serhii according to task from ElifTech School Bot
+This project was done by Hromov Serhii according to the task from ElifTech School Bot
  
 ## Backend server
 Was done with help of Go version 1.14
