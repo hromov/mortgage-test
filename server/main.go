@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
@@ -27,11 +29,6 @@ var BANK_DATA = []Bank{
 }
 
 func banksHandler(w http.ResponseWriter, r *http.Request) {
-	//Allow CORS here By * or specific origin
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
 	if r.URL.Path != "/banks" {
 		http.NotFound(w, r)
 		return
@@ -42,27 +39,53 @@ func banksHandler(w http.ResponseWriter, r *http.Request) {
 			http.StatusInternalServerError)
 		return
 	}
-	log.Println(BANK_DATA)
+	// log.Println(BANK_DATA)
 	fmt.Fprintf(w, string(b))
 }
 
+func bankChangeHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	ID := vars["id"]
+	if ID == "" {
+		http.Error(w, "blank ID error", http.StatusBadRequest)
+		return
+	}
+
+	var b Bank
+
+	err := json.NewDecoder(r.Body).Decode(&b)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if r.Method == "PUT" {
+		for i, bank := range BANK_DATA {
+			if bank.ID == ID {
+				BANK_DATA[i] = b
+				w.WriteHeader(http.StatusOK)
+				return
+			}
+		}
+	}
+	http.NotFound(w, r)
+}
+
+func newREST() *mux.Router {
+	r := mux.NewRouter()
+	r.HandleFunc("/banks", banksHandler).Methods("GET", "OPTIONS")
+	r.HandleFunc("/banks/{id}", bankChangeHandler).Methods("PUT", "DELETE", "OPTIONS")
+	return r
+}
+
 func main() {
-	// http.HandleFunc("/banks", banksHandler)
 
-	// port := os.Getenv("PORT")
-	// if port == "" {
-	// 	port = "8080"
-	// 	log.Printf("Defaulting to port %s", port)
-	// }
+	router := newREST()
+	credentials := handlers.AllowCredentials()
+	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "OPTIONS", "DELETE"})
+	headersOk := handlers.AllowedHeaders([]string{"Accept", "Accept-Language", "Content-Type", "Content-Language", "Origin", "X-Requested-With", "application/json"})
 
-	router := mux.NewRouter()
-	//api route is /people,
-	//Methods("GET", "OPTIONS") means it support GET, OPTIONS
-	router.HandleFunc("/banks", banksHandler).Methods("GET", "OPTIONS")
-	log.Fatal(http.ListenAndServe(":8080", router))
-
-	// log.Printf("Listening on port %s", port)
-	// if err := http.ListenAndServe(":"+port, nil); err != nil {
-	// 	log.Fatal(err)
-	// }
+	// ttl := handlers.MaxAge(3600)
+	origins := handlers.AllowedOrigins([]string{"http://localhost:4200", os.Getenv("ORIGIN_ALLOWED")})
+	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(credentials, methods, origins, headersOk)(router)))
 }

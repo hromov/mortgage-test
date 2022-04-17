@@ -32,9 +32,9 @@ export class BanksService {
     return this.http.get<Bank[]>(`${host}/banks`)
   }
 
-  save(bankId: string, changes: Partial<Bank>): Observable<any> {
+  save(bankId: string, bank: Bank): Observable<any> {
     // save implementation
-    return of(BANK_DATA[0])
+    return this.http.put(`${host}/banks/${bankId}`, bank)
   }
 
   delete(bankId: string): Observable<any> {

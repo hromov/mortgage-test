@@ -39,7 +39,7 @@ export class StoreService {
       newBanks[index] = newBank;
     }
     this.subject.next(newBanks);
-    return this.bs.save(bankId, changes)
+    return this.bs.save(bankId, newBank)
       .pipe(
         catchError(err => {
           const message = 'Could not save bank';
