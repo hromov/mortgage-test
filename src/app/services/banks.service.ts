@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { catchError, Observable, of, throwError } from 'rxjs';
 
 const BANK_DATA: Bank[] = [
   { id: "0", name: "Bank of America", interest: 0.2, max_loan: 40000, min_down: 0.3, term: 12 },
@@ -19,6 +19,8 @@ export interface Bank {
   term: number;
 }
 
+const host = 'http://localhost:8080'
+
 @Injectable({
   providedIn: 'root'
 })
@@ -27,7 +29,7 @@ export class BanksService {
   constructor(private http: HttpClient) { }
 
   loadAllBanks(): Observable<Bank[]> {
-    return of(BANK_DATA)
+    return this.http.get<Bank[]>(`${host}/banks`)
   }
 
   save(bankId: string, changes: Partial<Bank>): Observable<any> {
