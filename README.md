@@ -16,3 +16,7 @@ Done without databases, all data stored in slices. I don't know how to make data
 Run `npm install`
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`.
+
+## Prod version deployed here
+
+https://mortgage-test-347507.lm.r.appspot.com/
