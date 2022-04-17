@@ -19,7 +19,7 @@ export interface Bank {
   term: number;
 }
 
-const host = 'http://localhost:8080'
+const host = 'https://back-dot-mortgage-test-347507.lm.r.appspot.com'
 
 @Injectable({
   providedIn: 'root'
