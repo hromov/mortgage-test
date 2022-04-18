@@ -27,17 +27,10 @@ type DATA_BASE struct {
 	banks []Bank
 }
 
+// add, change, delete required here
 func (db *DATA_BASE) GetBanks() []Bank {
 	return db.banks
 }
-
-// var BANK_DATA = []Bank{
-// 	{ID: "0", Name: "Bank of America", Interest: 0.2, MaxLoan: 40000, MinDown: 0.3, Term: 12},
-// 	{ID: "1", Name: "Bank of China", Interest: 0.2, MaxLoan: 2000000, MinDown: 0.25, Term: 14},
-// 	{ID: "2", Name: "Bank of Ukraine", Interest: 0.2, MaxLoan: 20000, MinDown: 0.2, Term: 9},
-// 	{ID: "3", Name: "Bank of Spain", Interest: 0.2, MaxLoan: 100000, MinDown: 0.4, Term: 16},
-// 	{ID: "4", Name: "Bank of Italy", Interest: 0.2, MaxLoan: 300000, MinDown: 0.5, Term: 32},
-// }
 
 var BANKS_DATA = DATA_BASE{
 	banks: []Bank{
@@ -60,7 +53,6 @@ func banksHandler(w http.ResponseWriter, r *http.Request) {
 			http.StatusInternalServerError)
 		return
 	}
-	// log.Println(BANK_DATA)
 	fmt.Fprintf(w, string(b))
 }
 
@@ -72,7 +64,6 @@ func bankChangeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//search bank index in base
 	bankIndex := -1
 	BANKS_DATA.mu.Lock()
 	defer BANKS_DATA.mu.Unlock()
@@ -126,7 +117,7 @@ func newBankHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Can't POST bank with existing ID", http.StatusBadRequest)
 		return
 	}
-	// log.Println("interest = ", b.Interest)
+
 	if !validityCheck(&b) {
 		http.Error(w, fmt.Sprintf("Bad bank data: %v", b), http.StatusBadRequest)
 		return
