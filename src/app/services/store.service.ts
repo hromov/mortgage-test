@@ -31,13 +31,14 @@ export class StoreService {
     const index = banks.findIndex(bank => bank.id == bankId)
     console.log(index)
     // temporary fake id implementetion
-    const newBank: Bank = {
+    let newBank: Bank = {
       ...banks[index == -1 ? 0 : index],
       ...changes
     }
     const newBanks: Bank[] = banks.slice(0);
     // if we don't have this bank in base yet, we have to wait backend for proper ID
     if (index == -1) {
+      newBank.id = ""
       return this.bs.new(newBank)
         .pipe(
           catchError(err => {

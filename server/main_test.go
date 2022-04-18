@@ -82,7 +82,7 @@ func TestBanksHandler(t *testing.T) {
 	// 	t.Errorf("error while marshal decoding: %v", err)
 	// }
 
-	originalData, err := json.Marshal(BANK_DATA)
+	originalData, err := json.Marshal(BANKS_DATA.GetBanks())
 	if err != nil {
 		t.Errorf("internal error: %v", err)
 	}
