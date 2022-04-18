@@ -3,7 +3,7 @@ api_version: 1
 threadsafe: true
 
 handlers:
-- url: /
+- url: /.*
   static_files: dist/mortgage-test/index.html
   upload: dist/mortgage-test/index.html
 
