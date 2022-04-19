@@ -6,7 +6,7 @@ import { Bank } from 'src/app/services/banks.service';
 
 
 const Default_Bank: Bank = {
-  id: "",
+  id: 0,
   name: "Bank name",
   interest: 0.2,
   max_loan: 10000,

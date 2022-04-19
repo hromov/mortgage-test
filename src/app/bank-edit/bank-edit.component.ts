@@ -41,12 +41,17 @@ export class BankEditComponent implements AfterViewInit {
 
   save() {
 
-    const changes = this.form.value;
-    console.log(changes)
+    // const changes = this.form.value;
+    // console.log(changes)
+    const newBank = {
+      ...this.bank,
+      ...this.form.value
+    }
+    console.log("bank to chanhe: ", newBank)
     //optimistic variant. Prevent clossing or make inform message
-    this.storeService.saveBank(this.bank.id, changes).subscribe()
+    this.storeService.saveBank(newBank).subscribe()
 
-    this.dialogRef.close(changes)
+    this.dialogRef.close(newBank)
 
 
 

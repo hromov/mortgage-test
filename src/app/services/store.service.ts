@@ -26,20 +26,15 @@ export class StoreService {
     ).subscribe()
   }
 
-  saveBank(bankId: string, changes: Partial<Bank>): Observable<any> {
+  saveBank(bank: Bank): Observable<any> {
     const banks = this.subject.getValue();
-    const index = banks.findIndex(bank => bank.id == bankId)
-    console.log(index)
+    const index = banks.findIndex(b => b.id == bank.id)
+    console.log(index, bank)
     // temporary fake id implementetion
-    let newBank: Bank = {
-      ...banks[index == -1 ? 0 : index],
-      ...changes
-    }
     const newBanks: Bank[] = banks.slice(0);
     // if we don't have this bank in base yet, we have to wait backend for proper ID
     if (index == -1) {
-      newBank.id = ""
-      return this.bs.new(newBank)
+      return this.bs.new(bank)
         .pipe(
           catchError(err => {
             const message = 'Could not save bank. Try again';
@@ -55,9 +50,9 @@ export class StoreService {
         );
     }
 
-    newBanks[index] = newBank;
+    newBanks[index] = bank;
     this.subject.next(newBanks);
-    return this.bs.save(bankId, newBank)
+    return this.bs.save(bank)
       .pipe(
         catchError(err => {
           const message = 'Could not save bank. Try again';
@@ -69,7 +64,7 @@ export class StoreService {
       );
   }
 
-  deleteBank(bankId: string): Observable<any> {
+  deleteBank(bankId: number): Observable<any> {
     let banks = this.subject.getValue();
     const index = banks.findIndex(bank => bank.id == bankId)
     //save in case we'll get backend error
@@ -92,10 +87,10 @@ export class StoreService {
       );
   }
 
-  getBank(bankId: string): Bank {
+  getBank(bankId: number): Bank {
     const banks = this.subject.getValue();
     const index = banks.findIndex(bank => bank.id == bankId)
-    console.log(bankId, banks)
+    // console.log(bankId, banks)
     return banks[index]
   }
 }

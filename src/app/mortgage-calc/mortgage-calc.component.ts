@@ -6,7 +6,7 @@ import { StoreService } from '../services/store.service';
 
 function monthlyCalc(loan: number, interest: number, term: number): number {
   const m = (loan * (interest / 12) * Math.pow(1 + interest / 12, term)) / (Math.pow(1 + interest / 12, term) - 1)
-  console.log(m)
+  // console.log(m)
   return m
 }
 
@@ -31,7 +31,7 @@ export class MortgageCalcComponent implements OnInit {
     this.form = fb.group({
       loan: [10000, Validators.required],
       down: [3000, Validators.required],
-      bank: ["", Validators.required],
+      bank: [0, Validators.required],
     });
   }
 
@@ -60,7 +60,7 @@ export class MortgageCalcComponent implements OnInit {
     )
 
     this.bankSelection.valueChanges.subscribe(bankId => {
-      if (this.selectedBank != bankId) {
+      if (bankId && this.selectedBank != bankId) {
         this.selectedBank = this.storeService.getBank(bankId)
         this.bankChanged()
       }

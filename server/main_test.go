@@ -147,7 +147,7 @@ func TestNewBankHandler(t *testing.T) {
 					return
 				}
 
-				if bank.ID == "" {
+				if bank.id == "" {
 					t.Errorf("No bank ID was assigned")
 				}
 				if bank.Interest != tc.in[i].Interest || bank.MaxLoan != tc.in[i].MaxLoan || bank.MinDown != tc.in[i].MinDown || bank.Name != tc.in[i].Name || bank.Term != tc.in[i].Term {

@@ -6,48 +6,47 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"sync"
-	"time"
+	"strconv"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	mdb "github.com/hromov/mortgagedb"
 )
 
-type Bank struct {
-	ID       string  `json:"id"`
-	Name     string  `json:"name"`
-	Interest float32 `json:"interest"`
-	MaxLoan  int     `json:"max_loan"`
-	MinDown  float32 `json:"min_down"`
-	Term     int32   `json:"term"`
-}
+// type Bank struct {
+// 	ID       string  `json:"id"`
+// 	Name     string  `json:"name"`
+// 	Interest float32 `json:"interest"`
+// 	MaxLoan  int     `json:"max_loan"`
+// 	MinDown  float32 `json:"min_down"`
+// 	Term     int32   `json:"term"`
+// }
 
-type DATA_BASE struct {
-	mu    sync.Mutex
-	banks []Bank
-}
+// type DATA_BASE struct {
+// 	mu    sync.Mutex
+// 	banks []Bank
+// }
 
 // add, change, delete required here
-func (db *DATA_BASE) GetBanks() []Bank {
-	return db.banks
-}
 
-var BANKS_DATA = DATA_BASE{
-	banks: []Bank{
-		{ID: "0", Name: "Bank of America", Interest: 0.2, MaxLoan: 40000, MinDown: 0.3, Term: 12},
-		{ID: "1", Name: "Bank of China", Interest: 0.2, MaxLoan: 2000000, MinDown: 0.25, Term: 14},
-		{ID: "2", Name: "Bank of Ukraine", Interest: 0.2, MaxLoan: 20000, MinDown: 0.2, Term: 9},
-		{ID: "3", Name: "Bank of Spain", Interest: 0.2, MaxLoan: 100000, MinDown: 0.4, Term: 16},
-		{ID: "4", Name: "Bank of Italy", Interest: 0.2, MaxLoan: 300000, MinDown: 0.5, Term: 32},
-	},
-}
+// var BANKS_DATA = DATA_BASE{
+// 	banks: []Bank{
+// 		{ID: "0", Name: "Bank of America", Interest: 0.2, MaxLoan: 40000, MinDown: 0.3, Term: 12},
+// 		{ID: "1", Name: "Bank of China", Interest: 0.2, MaxLoan: 2000000, MinDown: 0.25, Term: 14},
+// 		{ID: "2", Name: "Bank of Ukraine", Interest: 0.2, MaxLoan: 20000, MinDown: 0.2, Term: 9},
+// 		{ID: "3", Name: "Bank of Spain", Interest: 0.2, MaxLoan: 100000, MinDown: 0.4, Term: 16},
+// 		{ID: "4", Name: "Bank of Italy", Interest: 0.2, MaxLoan: 300000, MinDown: 0.5, Term: 32},
+// 	},
+// }
 
 func banksHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/banks" {
 		http.NotFound(w, r)
 		return
 	}
-	b, err := json.Marshal(BANKS_DATA.GetBanks())
+	banks := mdb.List()
+	// log.Println("banks in main: ", banks)
+	b, err := json.Marshal(banks)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError),
 			http.StatusInternalServerError)
@@ -58,47 +57,53 @@ func banksHandler(w http.ResponseWriter, r *http.Request) {
 
 func bankChangeHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	ID := vars["id"]
-	if ID == "" {
-		http.Error(w, "blank ID error", http.StatusBadRequest)
+	ID, err := strconv.ParseUint(vars["id"], 10, 32)
+	if err != nil {
+		http.Error(w, "ID conversion error: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	bankIndex := -1
-	BANKS_DATA.mu.Lock()
-	defer BANKS_DATA.mu.Unlock()
-	for i, bank := range BANKS_DATA.GetBanks() {
-		if bank.ID == ID {
-			bankIndex = i
-		}
-	}
+	// bankIndex := -1
+	// BANKS_DATA.mu.Lock()
+	// defer BANKS_DATA.mu.Unlock()
+	// for i, bank := range BANKS_DATA.GetBanks() {
+	// 	if bank.id == ID {
+	// 		bankIndex = i
+	// 	}
+	// }
 
-	if bankIndex == -1 {
-		http.NotFound(w, r)
-		return
-	}
+	// if bankIndex == -1 {
+	// 	http.NotFound(w, r)
+	// 	return
+	// }
 
 	switch r.Method {
 	case "PUT":
-		var b Bank
+		var b mdb.Bank
 
-		err := json.NewDecoder(r.Body).Decode(&b)
-		if err != nil {
+		if err := json.NewDecoder(r.Body).Decode(&b); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		BANKS_DATA.banks[bankIndex] = b
+
+		if err := mdb.Save(b); err != nil {
+			http.Error(w, "can't save bank error: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
 		w.WriteHeader(http.StatusOK)
 		return
 	case "DELETE":
-
-		BANKS_DATA.banks = append(BANKS_DATA.banks[:bankIndex], BANKS_DATA.banks[bankIndex+1:]...)
+		err = mdb.Delete(uint(ID))
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Can't delete bankd with ID = %d. DB Error: %s", ID, err.Error()), http.StatusInternalServerError)
+			return
+		}
 		w.WriteHeader(http.StatusOK)
 		return
 	}
 }
 
-func validityCheck(bank *Bank) bool {
+func validityCheck(bank *mdb.Bank) bool {
 	if bank == nil || bank.Interest <= 0.0 || bank.MaxLoan < 0 || bank.MinDown < 0.0 || bank.Name == "" || bank.Term < 0 {
 		return false
 	}
@@ -106,15 +111,11 @@ func validityCheck(bank *Bank) bool {
 }
 
 func newBankHandler(w http.ResponseWriter, r *http.Request) {
-	var b Bank
+	var b mdb.Bank
 
 	err := json.NewDecoder(r.Body).Decode(&b)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	if b.ID != "" {
-		http.Error(w, "Can't POST bank with existing ID", http.StatusBadRequest)
 		return
 	}
 
@@ -122,13 +123,10 @@ func newBankHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("Bad bank data: %v", b), http.StatusBadRequest)
 		return
 	}
-	b.ID = fmt.Sprintf("%d", time.Now().UnixNano())
-	BANKS_DATA.mu.Lock()
-	defer BANKS_DATA.mu.Unlock()
 
-	BANKS_DATA.banks = append(BANKS_DATA.banks, b)
+	bank := mdb.Create(b)
 
-	bankString, err := json.Marshal(b)
+	bankString, err := json.Marshal(bank)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError),
 			http.StatusInternalServerError)
@@ -148,6 +146,10 @@ func newREST() *mux.Router {
 }
 
 func main() {
+	dsn := "root:password@tcp(127.0.0.1:3306)/gorm_test?charset=utf8mb4&parseTime=True&loc=Local"
+	if err := mdb.Init(dsn); err != nil {
+		log.Fatalf("Cant init data base error: %s", err.Error())
+	}
 
 	router := newREST()
 	credentials := handlers.AllowCredentials()
